@@ -17,8 +17,8 @@ ACCESS_KEY = ''
 SECRET_ACCESS_KEY = ''
 BUCKET_NAME = 'graphite-images'
 
-S3Conn = S3Connection(ACCESS_KEY, SECRET_ACCESS_KEY)
-S3Bucket = S3Conn.get_bucket(BUCKET_NAME)
+#S3Conn = S3Connection(ACCESS_KEY, SECRET_ACCESS_KEY)
+#S3Bucket = S3Conn.get_bucket(BUCKET_NAME)
 
 # update this rzp keys
 
@@ -28,19 +28,19 @@ RZP_AUTH_KEY = ""
 
 
 # upload file to s3 return url.
-class Upload(Resource):
+#class Upload(Resource):
 
-    def post(self):
-        global S3_URL, S3Bucket
-        file = request.files.get('file')
-
-        file_path_s3 = os.path.join(str(randint(1, 1000000)), 'image.jpg')
-        img_key = S3Bucket.new_key(file_path_s3)
-        img_key.set_metadata('Content-Type', 'image/png')
-        img_key.set_contents_from_file(file)
-        img_key.set_acl('public-read')
-        image_url = S3_URL + file_path_s3
-        return {'message': {'image_url': image_url, 'status': 200}}
+#    def post(self):
+#        global S3_URL, S3Bucket
+#        file = request.files.get('file')
+#
+#        file_path_s3 = os.path.join(str(randint(1, 1000000)), 'image.jpg')
+#        img_key = S3Bucket.new_key(file_path_s3)
+#        img_key.set_metadata('Content-Type', 'image/png')
+#        img_key.set_contents_from_file(file)
+#        img_key.set_acl('public-read')
+#        image_url = S3_URL + file_path_s3
+#        return {'message': {'image_url': image_url, 'status': 200}}
 
 
 class CreateOrder(Resource):
