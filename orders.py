@@ -8,7 +8,7 @@ import requests
 from user import JSONEncoder
 
 from flask_restful import Resource
-from bson.json_util import ObjectId
+from bson.json_util import ObjectId, loads
 from random import randint
 import os
 from boto.s3.key import Key
@@ -164,8 +164,8 @@ class ShowOrder(Resource):
         order_db = g.dbclient['orders']
         order_id = ObjectId(request.args.get('order_id'))
         order = order_db.find({'_id': order_id})
-        if not order:
-            abort(400, 'order id not found')
-        else:
+        try:
             order = order[0]
+        except Exception as e:
+            return {'message': {'orders': [], 'status': 200}}
         return {'message': {'order': JSONEncoder().encode(order), 'status': 200}}
