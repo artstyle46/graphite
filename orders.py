@@ -169,4 +169,4 @@ class ShowOrder(Resource):
         if not order.count():
             return {'message': {'order': [], 'status': 200}}
         order = order[0]
-        return {'message': {'order': JSONEncoder().encode(order), 'status': 200}}
+        return {'message': {'order': dumps(order), 'status': 200}}
