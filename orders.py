@@ -13,11 +13,12 @@ from boto.s3.key import Key
 from boto.s3.connection import S3Connection
 
 S3_URL = 'https://s3.ap-south-1.amazonaws.com/'
-ACCESS_KEY = 'AKIAI3ZCSQMS2QCBLTPQ'
-SECRET_ACCESS_KEY = '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'
+ACCESS_KEY = 'AKIAJZ4NLC6GORBVRWGA'
+SECRET_ACCESS_KEY = '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'
 BUCKET_NAME = 'graphitetouch'
+AWS_REGION = 's3.ap-south-1.amazonaws.com'
 
-S3Conn = S3Connection(ACCESS_KEY, SECRET_ACCESS_KEY)
+S3Conn = S3Connection(ACCESS_KEY, SECRET_ACCESS_KEY, host=AWS_REGION)
 S3Bucket = S3Conn.get_bucket(BUCKET_NAME)
 
 # update this rzp keys
