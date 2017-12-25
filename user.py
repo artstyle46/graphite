@@ -1,8 +1,17 @@
 from flask import request, abort
 from flask import g
-
+import json
 from flask_restful import Resource
 from passlib.hash import sha256_crypt
+
+from bson.json_util import loads, dumps, ObjectId
+
+
+class JSONEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, ObjectId):
+            return str(o)
+        return json.JSONEncoder.default(self, o)
 
 class Login(Resource):
 
@@ -15,10 +24,10 @@ class Login(Resource):
             abort(400, {'message': 'email not found'})
         else:
             user = user[0]
-        if not sha256_crypt.verify(password, user.password):
+        if not sha256_crypt.verify(password, user['password']):
             abort(400, {'message': 'password didn\'t match'})
 
-        return {'message': {'user': user, 'status': 200}}
+        return {'message': {'user': JSONEncoder().encode(user), 'status': 200}}
 
 
 class Register(Resource):

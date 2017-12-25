@@ -71,18 +71,13 @@ def get_logger(file_name=None, log_name='default', console_log=False, mode='info
 
 @app.before_request
 def set_start_time():
-    global dbclient, access_logger
+    global dbclient
     g.dbclient = dbclient
-    g.logger = access_logger
-
 
 def setup_app():
-    global access_logger
     api = Api(app)
 
     #setup logging
-    log_name = 'app'
-    access_logger = get_logger(file_name='%s_access.log' % log_name, log_name='access')
 
     api.add_resource(Login, '/api/login', strict_slashes=False)
     api.add_resource(Register, '/api/signup', strict_slashes=False)
