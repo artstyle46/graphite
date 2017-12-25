@@ -39,12 +39,12 @@ class Upload(Resource):
 
     def post(self):
         global S3_URL, S3Bucket
-        file = request.files.get('file')
+        img_file = request.files.get('file')
 
-        file_path_s3 = os.path.join(str(randint(1, 1000000)), 'image.jpg')
+        file_path_s3 = os.path.join(str(S3Bucket, randint(1, 1000000)), 'image.jpg')
         img_key = S3Bucket.new_key(file_path_s3)
         img_key.set_metadata('Content-Type', 'image/png')
-        img_key.set_contents_from_file(file)
+        img_key.set_contents_from_file(img_file)
         img_key.set_acl('public-read')
         image_url = S3_URL + file_path_s3
         return {'message': {'image_url': image_url, 'status': 200}}
