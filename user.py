@@ -49,9 +49,10 @@ class Register(Resource):
             'mobile_no': mobile_no,
             'user_type': user_type
         }
-        inserted_id = user_db.insert_one(user).inserted_id
-        g.logger.info('user created with id: %s' % str(inserted_id))
-
+        try:
+            inserted_id = user_db.insert_one(user).inserted_id
+        except Exception as e:
+            return {'message': {'msg': 'User already registered with  mobile number or email', 'status': 400}}
         return {'message': {'msg': 'registration successful', 'status': 200}}
 
 
@@ -73,9 +74,10 @@ class VendorRegister(Resource):
             'mobile_no': mobile_no,
             'user_type': user_type
         }
-        inserted_id = user_db.insert_one(user).inserted_id
-        g.logger.info('user created with id: %s' % str(inserted_id))
-
+        try:
+            inserted_id = user_db.insert_one(user).inserted_id
+        except Exception as e:
+            return {'message': {'msg': 'User already registered with  mobile number or email', 'status': 400}}
         return {'message': {'msg': 'registration successful', 'status': 200}}
 
 
