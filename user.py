@@ -13,6 +13,7 @@ class JSONEncoder(json.JSONEncoder):
             return str(o)
         return json.JSONEncoder.default(self, o)
 
+
 class Login(Resource):
 
     def post(self):
@@ -48,10 +49,11 @@ class Register(Resource):
             'mobile_no': mobile_no,
             'user_type': user_type
         }
-        inserted_id= user_db.insert_one(user).inserted_id
+        inserted_id = user_db.insert_one(user).inserted_id
         g.logger.info('user created with id: %s' % str(inserted_id))
 
         return {'message': {'msg': 'registration successful', 'status': 200}}
+
 
 class VendorRegister(Resource):
 
@@ -76,6 +78,7 @@ class VendorRegister(Resource):
 
         return {'message': {'msg': 'registration successful', 'status': 200}}
 
+
 class UpdatePassword(Resource):
 
     def post(self):
@@ -87,4 +90,3 @@ class UpdatePassword(Resource):
         if not user_upd.modified_count:
             abort(400, 'unable to update password')
         return {'message': {'msg': 'password updated successfully', 'status': 200}}
-

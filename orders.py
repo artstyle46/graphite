@@ -5,27 +5,33 @@ from flask import g
 
 import requests
 
+from user import JSONEncoder
+
 from flask_restful import Resource
 from bson.json_util import ObjectId
 from random import randint
 import os
 from boto.s3.key import Key
 from boto.s3.connection import S3Connection
+import json
+from os.path import expanduser
+home = expanduser("~")
 
-S3_URL = 'https://s3.ap-south-1.amazonaws.com/'
-ACCESS_KEY = 'AKIAJZ4NLC6GORBVRWGA'
-SECRET_ACCESS_KEY = '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'
-BUCKET_NAME = 'graphitetouch'
-AWS_REGION = 's3.ap-south-1.amazonaws.com'
+graphite_config = json.load(open(os.path.join(home, ".graphite.json")))
+
+ACCESS_KEY = graphite_config["access_key"]
+SECRET_ACCESS_KEY = graphite_config["secret_access_key"]
+AWS_REGION = graphite_config["aws_region"]
+BUCKET_NAME = graphite_config["bucket_name"]
+S3_URL = graphite_config["s3_url"]
 
 S3Conn = S3Connection(ACCESS_KEY, SECRET_ACCESS_KEY, host=AWS_REGION)
 S3Bucket = S3Conn.get_bucket(BUCKET_NAME)
 
 # update this rzp keys
 
-RAZORPAY = {'key': ''}
-RZP_KEY = ""
-RZP_AUTH_KEY = ""
+RZP_KEY = graphite_config["rzp_key"]
+RZP_AUTH_KEY = graphite_config["rzp_auth_key"]
 
 
 # upload file to s3 return url.
@@ -86,12 +92,16 @@ class Payment(Resource):
         order_db = g.dbclient['orders']
         order_id = ObjectId(request.json['order_id'])
 
-        url = "https://api.razorpay.com/v1/payments/" + request.json['payment_key'] + "/capture"
-        data = {
-            "amount": int(request.json['fare'] * 100)
-        }
-        capture_request = requests.post(url, data=data,
-                                        auth=(RZP_KEY, RZP_AUTH_KEY))
+        import razorpay
+
+        client = razorpay.Client(auth=(RZP_KEY, RZP_AUTH_KEY))
+
+        payment_id = request.json['payment_id']
+
+        payment_amount = request.json['payment_amount'] * 100
+
+        capture_request = client.payment.capture(payment_id, payment_amount)
+
         capture_response = capture_request.json()
         if not capture_response.__contains__('status'):
             payment_status = 'authorized'
@@ -133,12 +143,18 @@ class ShowOrders(Resource):
             abort(400, 'user id not found')
         else:
             user = user[0]
-        if user.user_type == 'vendor':
-            orders = order_db.find()
-            return {'message': {'orders': orders, 'status': 200}}
-        elif user.user_type == 'customer':
-            orders = order_db.find({'user': user_id})
-            return {'message': {'orders': orders, 'status': 200}}
+        if user["user_type"] == 'vendor':
+            try:
+                orders = order_db.find()
+            except Exception as e:
+                return {'message': {'orders': [], 'status': 200}}
+            return {'message': {'orders': JSONEncoder().encode(orders), 'status': 200}}
+        elif user["user_type"] == 'customer':
+            try:
+                orders = order_db.find({'user': user_id})
+            except Exception as e:
+                return {'message': {'orders': [], 'status': 200}}
+            return {'message': {'orders': JSONEncoder().encode(orders), 'status': 200}}
         abort(400, 'no user type found')
 
 
@@ -152,4 +168,4 @@ class ShowOrder(Resource):
             abort(400, 'order id not found')
         else:
             order = order[0]
-        return {'message': {'order': order, 'status': 200}}
+        return {'message': {'order': JSONEncoder().encode(order), 'status': 200}}
