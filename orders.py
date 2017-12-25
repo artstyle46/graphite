@@ -38,10 +38,10 @@ RZP_AUTH_KEY = graphite_config["rzp_auth_key"]
 class Upload(Resource):
 
     def post(self):
-        global S3_URL, S3Bucket
+        global S3_URL, S3Bucket, BUCKET_NAME
         img_file = request.files.get('file')
 
-        file_path_s3 = os.path.join(S3Bucket, str(randint(1, 1000000)), 'image.jpg')
+        file_path_s3 = os.path.join(BUCKET_NAME, str(randint(1, 1000000)), 'image.jpg')
         img_key = S3Bucket.new_key(file_path_s3)
         img_key.set_metadata('Content-Type', 'image/png')
         img_key.set_contents_from_file(img_file)
