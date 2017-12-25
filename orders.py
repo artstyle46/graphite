@@ -46,7 +46,7 @@ class Upload(Resource):
         img_key.set_metadata('Content-Type', 'image/png')
         img_key.set_contents_from_file(img_file)
         img_key.set_acl('public-read')
-        image_url = S3_URL + BUCKET_NAME + file_path_s3
+        image_url = os.path.join(S3_URL, BUCKET_NAME, file_path_s3)
         return {'message': {'image_url': image_url, 'status': 200}}
 
 
