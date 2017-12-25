@@ -93,4 +93,4 @@ def setup_app():
     api.add_resource(Payment, '/api/order/payment', strict_slashes=False)
     api.add_resource(CancelOrder, '/api/order/cancel', strict_slashes=False)
     api.add_resource(ShowOrders, '/api/order/show', strict_slashes=False)
-    api.add_resource(ShowOrders, '/api/order/show/id', strict_slashes=False)
+    api.add_resource(ShowOrder, '/api/order/show/id', strict_slashes=False)

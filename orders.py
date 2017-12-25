@@ -12,10 +12,10 @@ import os
 from boto.s3.key import Key
 from boto.s3.connection import S3Connection
 
-S3_URL = 'https://s3-ap-southeast-1.amazonaws.com/'
-ACCESS_KEY = ''
-SECRET_ACCESS_KEY = ''
-BUCKET_NAME = 'graphite-images'
+S3_URL = 'https://s3.ap-south-1.amazonaws.com/'
+ACCESS_KEY = 'AKIAI3ZCSQMS2QCBLTPQ'
+SECRET_ACCESS_KEY = '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'
+BUCKET_NAME = 'graphitetouch'
 
 S3Conn = S3Connection(ACCESS_KEY, SECRET_ACCESS_KEY)
 S3Bucket = S3Conn.get_bucket(BUCKET_NAME)
