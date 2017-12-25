@@ -152,6 +152,8 @@ class ShowOrders(Resource):
         elif user["user_type"] == 'customer':
             try:
                 orders = order_db.find({'user': user_id})
+                if not orders.count():
+                    orders = []
             except Exception as e:
                 return {'message': {'orders': [], 'status': 200}}
             return {'message': {'orders': JSONEncoder().encode(orders), 'status': 200}}
@@ -164,8 +166,7 @@ class ShowOrder(Resource):
         order_db = g.dbclient['orders']
         order_id = ObjectId(request.args.get('order_id'))
         order = order_db.find({'_id': order_id})
-        try:
-            order = order[0]
-        except Exception as e:
+        if not order.count():
             return {'message': {'orders': [], 'status': 200}}
+        order = order[0]
         return {'message': {'order': JSONEncoder().encode(order), 'status': 200}}
