@@ -167,10 +167,10 @@ class ShowOrder(Resource):
 class UpdateOrderStatus(Resource):
 
     def get(self):
-        order_id = ObjectId(request.json.get('order_id'))
+        order_id = ObjectId(request.args.get('order_id'))
         order_status = request.args.get('order_status')
         order_db = g.dbclient['orders']
-        user_id = ObjectId(request.json['user_id'])
+        user_id = ObjectId(request.args['user_id'])
         upd_order = order_db.update_one({'_id': order_id, 'user': user_id}, {'$set': {'order_status': order_status}})
 
         if not order.modified_count:
