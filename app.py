@@ -5,7 +5,7 @@ from flask import request
 from flask_restful import reqparse, Api, Resource
 from flask_mail import Mail, Message
 from flask_cors import CORS
-import json
+import json, os
 
 from os.path import expanduser
 home = expanduser("~")
