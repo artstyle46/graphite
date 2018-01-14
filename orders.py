@@ -66,6 +66,10 @@ class CreateOrder(Resource):
         payment_status = 'pending'
         required_at = request.json.get('required_at')
         image_url = request.json.get('file_path')
+        shipping_address = request.json.get('shipping_address')
+        billing_address = request.json.get('billing_address')
+        description = request.json.get('description')
+        category = request.json.get('category')
 
         order = {
             'user': user_id,
@@ -76,7 +80,11 @@ class CreateOrder(Resource):
             'order_status': order_status,
             'payment_status': payment_status,
             'required_at': required_at,
-            'image_url': image_url
+            'image_url': image_url,
+            'shipping_address': shipping_address,
+            'billing_address': billing_address,
+            'description': description,
+            'category': category
         }
 
         order_id = order_db.insert_one(order).inserted_id
