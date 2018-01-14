@@ -14,24 +14,21 @@ import os
 from boto.s3.key import Key
 from boto.s3.connection import S3Connection
 import json
-from os.path import expanduser
-home = expanduser("~")
+from flask_mail import Message
 
-graphite_config = json.load(open(os.path.join(home, ".graphite.json")))
-
-ACCESS_KEY = graphite_config["access_key"]
-SECRET_ACCESS_KEY = graphite_config["secret_access_key"]
-AWS_REGION = graphite_config["aws_region"]
-BUCKET_NAME = graphite_config["bucket_name"]
-S3_URL = graphite_config["s3_url"]
+ACCESS_KEY = g.graphite_config["access_key"]
+SECRET_ACCESS_KEY = g.graphite_config["secret_access_key"]
+AWS_REGION = g.graphite_config["aws_region"]
+BUCKET_NAME = g.graphite_config["bucket_name"]
+S3_URL = g.graphite_config["s3_url"]
 
 S3Conn = S3Connection(ACCESS_KEY, SECRET_ACCESS_KEY, host=AWS_REGION)
 S3Bucket = S3Conn.get_bucket(BUCKET_NAME)
 
 # update this rzp keys
 
-RZP_KEY = graphite_config["rzp_key"]
-RZP_AUTH_KEY = graphite_config["rzp_auth_key"]
+RZP_KEY = g.graphite_config["rzp_key"]
+RZP_AUTH_KEY = g.graphite_config["rzp_auth_key"]
 
 
 # upload file to s3 return url.
@@ -84,6 +81,13 @@ class CreateOrder(Resource):
 
         return {'message': {'msg': 'order successfully created', 'status': 200}}
 
+class SendOrderCreationMail(Resource):
+
+    def post(self, email, order_status='UNKOWN'):
+        msg = Message(g.string_constants['ORDER_CREATION_SUBJECT'], sender=g.graphite_config['email'], recipients=[email])
+        msg.body = g.string_constants['ORDER_CREATION_BODY'] + order_status
+        mail.send(msg)
+        return "Sent"
 
 class Payment(Resource):
 
@@ -114,22 +118,6 @@ class Payment(Resource):
         if not order.modified_count:
             abort(400, 'order not updated')
         return {'message': {'msg': 'order payment completed', 'status': 200}}
-
-
-class CancelOrder(Resource):
-
-    def post(self):
-        order_db = g.dbclient['orders']
-        order_id = ObjectId(request.json['order_id'])
-        user_id = ObjectId(request.json['user_id'])
-        order_status = "cancelled"
-
-        order = order_db.update_one({'_id': order_id, 'user': user_id}, {'$set': {'order_status': order_status}})
-
-        if not order.modified_count:
-            abort(400, 'order not updated')
-
-        return {'message': {'msg': 'order cancelled successfully', 'status': 200}}
 
 
 class ShowOrders(Resource):
@@ -170,3 +158,17 @@ class ShowOrder(Resource):
             return {'message': {'orders': [], 'status': 200}}
         order = order[0]
         return {'message': {'order': JSONEncoder().encode(order), 'status': 200}}
+
+class UpdateOrderStatus(Resource):
+
+    def get(self):
+        order_id = ObjectId(request.json.get('order_id'))
+        order_status = request.args.get('order_status')
+        order_db = g.dbclient['orders']
+        user_id = ObjectId(request.json['user_id'])
+        upd_order = order_db.update_one({'_id': order_id, 'user': user_id}, {'$set': {'order_status': order_status}})
+
+        if not order.modified_count:
+            abort(400, 'order not updated')
+
+        return {'message': {'msg': 'order cancelled successfully', 'status': 200}}

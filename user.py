@@ -5,7 +5,8 @@ from flask_restful import Resource
 from passlib.hash import sha256_crypt
 
 from bson.json_util import loads, dumps, ObjectId
-
+from flask_mail import Message
+import string
 
 class JSONEncoder(json.JSONEncoder):
     def default(self, o):
@@ -79,6 +80,22 @@ class VendorRegister(Resource):
         except Exception as e:
             return {'message': {'msg': 'User already registered with  mobile number or email', 'status': 400}}
         return {'message': {'msg': 'registration successful', 'status': 200}}
+
+class NewPassword(Resource):
+
+    def post(self):
+        email = request.json['email'].strip().lower()
+        msg = Message(g.string_constants['NEW_PASSWORD_SUBJECT'], sender=g.graphite_config['email'], recipients=[email])
+        chars = string.ascii_letters + string.digits + string.punctuation
+        new_password = ''.join(random.choice(chars) for _ in xrange(8))
+        msg.body = g.string_constants['NEW_PASSWORD_BODY'] + new_password
+        hash_password = sha256_crypt.encrypt(password)
+        user_upd = user_db.update_one({'email': email}, {'$set': {'password': hash_password}})
+        if not user_upd.modified_count:
+            abort(400, 'unable to update password')
+        g.mail.send(msg)
+        return "Sent"
+
 
 
 class UpdatePassword(Resource):
