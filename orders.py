@@ -16,19 +16,24 @@ from boto.s3.connection import S3Connection
 import json
 from flask_mail import Message
 
-ACCESS_KEY = g.graphite_config["access_key"]
-SECRET_ACCESS_KEY = g.graphite_config["secret_access_key"]
-AWS_REGION = g.graphite_config["aws_region"]
-BUCKET_NAME = g.graphite_config["bucket_name"]
-S3_URL = g.graphite_config["s3_url"]
+from os.path import expanduser
+home = expanduser("~")
+
+graphite_config = json.load(open(os.path.join(home, ".graphite.json")))
+
+ACCESS_KEY = graphite_config["access_key"]
+SECRET_ACCESS_KEY = graphite_config["secret_access_key"]
+AWS_REGION = graphite_config["aws_region"]
+BUCKET_NAME = graphite_config["bucket_name"]
+S3_URL = graphite_config["s3_url"]
 
 S3Conn = S3Connection(ACCESS_KEY, SECRET_ACCESS_KEY, host=AWS_REGION)
 S3Bucket = S3Conn.get_bucket(BUCKET_NAME)
 
 # update this rzp keys
 
-RZP_KEY = g.graphite_config["rzp_key"]
-RZP_AUTH_KEY = g.graphite_config["rzp_auth_key"]
+RZP_KEY = graphite_config["rzp_key"]
+RZP_AUTH_KEY = graphite_config["rzp_auth_key"]
 
 
 # upload file to s3 return url.
