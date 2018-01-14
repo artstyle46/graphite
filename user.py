@@ -84,12 +84,16 @@ class VendorRegister(Resource):
 class NewPassword(Resource):
 
     def post(self):
+        user_db = g.dbclient['users']
         email = request.json['email'].strip().lower()
         msg = Message(g.string_constants['NEW_PASSWORD_SUBJECT'], sender=g.graphite_config['email'], recipients=[email])
         chars = string.ascii_letters + string.digits + string.punctuation
         new_password = ''.join(random.choice(chars) for _ in xrange(8))
         msg.body = g.string_constants['NEW_PASSWORD_BODY'] + new_password
         hash_password = sha256_crypt.encrypt(password)
+        user = user_db.find({'email': email})
+        if not user:
+            abort(400, 'user not available')
         user_upd = user_db.update_one({'email': email}, {'$set': {'password': hash_password}})
         if not user_upd.modified_count:
             abort(400, 'unable to update password')
