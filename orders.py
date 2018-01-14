@@ -8,7 +8,7 @@ import requests
 from user import JSONEncoder
 
 from flask_restful import Resource
-from bson.json_util import ObjectId, loads
+from bson.json_util import ObjectId, loads, dumps
 from random import randint
 import os
 from boto.s3.key import Key
@@ -136,7 +136,7 @@ class ShowOrders(Resource):
                 orders = order_db.find()
             except Exception as e:
                 return {'message': {'orders': [], 'status': 200}}
-            return {'message': {'orders': JSONEncoder().encode(orders), 'status': 200}}
+            return {'message': {'orders': dumps(orders), 'status': 200}}
         elif user["user_type"] == 'customer':
             try:
                 orders = order_db.find({'user': user_id})
@@ -144,7 +144,7 @@ class ShowOrders(Resource):
                     orders = []
             except Exception as e:
                 return {'message': {'orders': [], 'status': 200}}
-            return {'message': {'orders': JSONEncoder().encode(orders), 'status': 200}}
+            return {'message': {'orders': dumps(orders), 'status': 200}}
         abort(400, 'no user type found')
 
 
@@ -155,9 +155,9 @@ class ShowOrder(Resource):
         order_id = ObjectId(request.args.get('order_id'))
         order = order_db.find({'_id': order_id})
         if not order.count():
-            return {'message': {'orders': [], 'status': 200}}
+            return {'message': {'order': [], 'status': 200}}
         order = order[0]
-        return {'message': {'order': JSONEncoder().encode(order), 'status': 200}}
+        return {'message': {'order': dumps(order), 'status': 200}}
 
 class UpdateOrderStatus(Resource):
 
@@ -171,4 +171,4 @@ class UpdateOrderStatus(Resource):
         if not order.modified_count:
             abort(400, 'order not updated')
 
-        return {'message': {'msg': 'order cancelled successfully', 'status': 200}}
+        return {'message': {'msg': 'order updated successfully', 'status': 200}}
