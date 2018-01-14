@@ -6,7 +6,7 @@ from passlib.hash import sha256_crypt
 
 from bson.json_util import loads, dumps, ObjectId
 from flask_mail import Message
-import string
+import string, random
 
 class JSONEncoder(json.JSONEncoder):
     def default(self, o):
@@ -88,9 +88,9 @@ class NewPassword(Resource):
         email = request.json['email'].strip().lower()
         msg = Message(g.string_constants['NEW_PASSWORD_SUBJECT'], sender=g.graphite_config['email'], recipients=[email])
         chars = string.ascii_letters + string.digits + string.punctuation
-        new_password = ''.join(random.choice(chars) for _ in xrange(8))
+        new_password = ''.join(random.choice(chars) for _ in range(8))
         msg.body = g.string_constants['NEW_PASSWORD_BODY'] + new_password
-        hash_password = sha256_crypt.encrypt(password)
+        hash_password = sha256_crypt.encrypt(new_password)
         user = user_db.find({'email': email})
         if not user:
             abort(400, 'user not available')
