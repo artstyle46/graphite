@@ -33,6 +33,7 @@ from logging.handlers import TimedRotatingFileHandler
 from pymongo import MongoClient
 from user import *
 from orders import *
+from coupon import *
 
 dbclient = MongoClient('localhost', 27017)['graphite']
 
@@ -68,3 +69,6 @@ def setup_app():
     api.add_resource(ShowOrder, '/api/order/show/id', strict_slashes=False)
     api.add_resource(NewPassword, '/api/mail/password', strict_slashes=False)
     api.add_resource(SendOrderCreationMail, '/api/mail/<email>/<order_status>', strict_slashes=False)
+    api.add_resource(createCoupon, '/api/coupon/create', strict_slashes=False)
+    api.add_resource(editCoupon, '/api/coupon/edit', strict_slashes=False)
+    api.add_resource(getCouponDiscount, '/api/coupon/get', strict_slashes=False)
