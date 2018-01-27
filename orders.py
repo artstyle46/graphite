@@ -57,10 +57,10 @@ class CreateOrder(Resource):
     def post(self):
         order_db = g.dbclient['orders']
 
-        user_id = ObjectId(request.json['user_id'])
+        user_id = ObjectId(request.json.get('user_id', None))
         created_at = datetime.datetime.now()
-        marked_price = request.json['marked_price']
-        discount = request.json['discount']
+        marked_price = request.json.get('marked_price', 0.0)
+        discount = request.json.get('discount', 0.0)
         selling_price = marked_price - discount
         order_status = 'created'
         payment_status = 'pending'

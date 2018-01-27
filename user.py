@@ -21,7 +21,7 @@ class Login(Resource):
         email = request.json['email'].strip().lower()
         password = request.json['password']
         user = g.dbclient['users'].find({'email': email})
-        if not user:
+        if not user.count():
             g.logger.error('user email %s not found aborting:' % email)
             abort(400, {'message': 'email not found'})
         else:
@@ -92,13 +92,13 @@ class NewPassword(Resource):
         msg.body = g.string_constants['NEW_PASSWORD_BODY'] + new_password
         hash_password = sha256_crypt.encrypt(new_password)
         user = user_db.find({'email': email})
-        if not user:
+        if not user.count():
             abort(400, 'user not available')
         user_upd = user_db.update_one({'email': email}, {'$set': {'password': hash_password}})
         if not user_upd.modified_count:
             abort(400, 'unable to update password')
         g.mail.send(msg)
-        return "Sent"
+        return {'message': {'msg': 'email sent successfully', 'status': 200}}
 
 
 
