@@ -43,58 +43,6 @@ STRING_CONSTANTS['NEW_PASSWORD_BODY'] = 'Your new password has been successfully
 STRING_CONSTANTS['ORDER_CREATION_SUBJECT'] = 'Order Successfully Created'
 STRING_CONSTANTS['ORDER_CREATION_BODY'] = 'Your order has been successfully created. Current status of your order is: '
 
-class Logger(object):
-    def __init__(self, name, path, debug_flag, console_log, rotate_flag=False):
-
-        # Read for detailed info:
-        # https://docs.python.org/2/howto/logging.html
-        level_def = {
-            'debug': logging.DEBUG,
-            'info': logging.INFO,
-            'warning': logging.WARNING,
-            'error': logging.ERROR,
-            'critical': logging.CRITICAL}
-
-        level = level_def.get(debug_flag,logging.NOTSET)
-
-        logging.basicConfig(level=level)
-        logger = logging.getLogger(name)
-        if rotate_flag:
-            hdlr = TimedRotatingFileHandler(path, when='H', interval=1, backupCount=168) ##log rotation for 1 (H)our and backing up max of 24*7 (=168) files.
-            hdlr.suffix = "%Y%m%dT%H"
-        else:
-            hdlr = logging.FileHandler(path)
-        formatter = logging.Formatter(u'%(asctime)s|%(process)d|%(threadName)s|%(levelname)s|%(filename)s|%(funcName)s|%(lineno)d|%(message)s')
-        hdlr.setFormatter(formatter)
-        logger.addHandler(hdlr)
-
-        if console_log:
-            logger.propagate = True
-        else:
-            logger.propagate = False
-
-        self.logger = logger
-
-    def get_logger(self):
-        return self.logger
-loggers = {}
-def get_logger(file_name=None, log_name='default', console_log=False, mode='info', rotate_flag=True):
-    global loggers
-    if log_name not in loggers:
-        assert file_name is not None
-        loggers[log_name] = (
-            Logger(
-                log_name,
-                os.path.join('../logs/', file_name),
-                mode,
-                console_log,
-                rotate_flag=rotate_flag
-            )
-            .get_logger()
-        )
-    return loggers[log_name]
-
-
 @app.before_request
 def set_start_time():
     global dbclient, mail, STRING_CONSTANTS, graphite_config

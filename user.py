@@ -22,7 +22,6 @@ class Login(Resource):
         password = request.json['password']
         user = g.dbclient['users'].find({'email': email})
         if not user.count():
-            g.logger.error('user email %s not found aborting:' % email)
             abort(400, {'message': 'email not found'})
         else:
             user = user[0]
