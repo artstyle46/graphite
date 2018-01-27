@@ -10,7 +10,7 @@ class createCoupon(Resource):
 
     def post(self):
         coupon_db = g.dbclient['coupons']
-        coupon_id = requset.json['coupon_id']
+        coupon_id = request.json['coupon_id']
         coupon_discount = request.json['coupon_discount']
         enabled = True
         created_at = datetime.datetime.now()
