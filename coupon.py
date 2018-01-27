@@ -20,8 +20,10 @@ class createCoupon(Resource):
             "enabled": enabled,
             "created_at": created_at
         }
-        coupon_id = coupon_db.insert_one(coupon_json).inserted_id
-
+        try:
+            coupon_id = coupon_db.insert_one(coupon_json).inserted_id
+        except:
+            abort(400, 'coupon already exists')
         if not coupon_id:
             abort(400, 'unable to create coupon')
         return {'message': {'msg': 'successfully created coupon', 'status': 400}}

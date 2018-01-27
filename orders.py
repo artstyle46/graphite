@@ -61,6 +61,7 @@ class CreateOrder(Resource):
         created_at = datetime.datetime.now()
         marked_price = request.json.get('marked_price', 0.0)
         discount = request.json.get('discount', 0.0)
+        coupon_id = request.json.get('coupon_id', '')
         selling_price = marked_price - discount
         order_status = 'created'
         payment_status = 'pending'
@@ -84,7 +85,8 @@ class CreateOrder(Resource):
             'shipping_address': shipping_address,
             'billing_address': billing_address,
             'description': description,
-            'category': category
+            'category': category,
+            'coupon_id': coupon_id
         }
 
         order_id = order_db.insert_one(order).inserted_id
