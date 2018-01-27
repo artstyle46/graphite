@@ -16,7 +16,7 @@ class createCoupon(Resource):
         created_at = datetime.datetime.now()
         coupon_json = {
             "coupon_id": coupon_id,
-            "coupon_discount": coupon_discount,
+            "coupon_discount": int(coupon_discount),
             "enabled": enabled,
             "created_at": created_at
         }
@@ -38,18 +38,18 @@ class editCoupon(Resource):
         update_coupon = False
         update_json = {}
         if new_discount:
-            update_json['coupon_discount'] = new_discount
+            update_json['coupon_discount'] = int(new_discount)
             update_coupon = True
         enabled = request.json.get('enabled', None)
         if enabled is not None:
             update_json['enabled'] = enabled
             update_coupon = True
         update_json['updated_at'] = datetime.datetime.now()
-        coupon = coupon_db.find({'coupon_id', coupon_id})
+        coupon = coupon_db.find({'coupon_id': coupon_id})
         if not coupon.count():
             abort(400, 'coupon id doesn\'t exist in the db to update')
         if update_coupon:
-            updated_coupon = coupon_db.update_one({'coupon_id', coupon_id}, {'$set': update_json})
+            updated_coupon = coupon_db.update_one({'coupon_id': coupon_id}, {'$set': update_json})
             if not updated_coupon.modified_count:
                 abort(400, 'coupon not updated')
             return {'message': {'msg': 'successfully updated the coupon %s' % coupon_id, 'status': 200}}
@@ -61,7 +61,7 @@ class getCouponDiscount(Resource):
 
     def get(self):
         coupon_db = g.dbclient['coupons']
-        coupon_id = request.json.get('coupon_id')
+        coupon_id = request.args.get('coupon_id')
         if not coupon_id:
             abort(400, 'no coupon id provided')
         coupon_detail = coupon_db.find({'coupon_id': coupon_id, 'enabled': True})
