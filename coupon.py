@@ -4,7 +4,7 @@ from flask import request, abort
 from flask import g
 
 from user import JSONEncoder
-
+from flask_restful import Resource
 
 class createCoupon(Resource):
 
