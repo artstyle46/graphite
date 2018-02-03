@@ -94,7 +94,7 @@ class CreateOrder(Resource):
         if not order_id:
             abort(400, 'order not created')
 
-        return {'message': {'msg': 'order successfully created', 'status': 200}}
+        return {'message': {'msg': 'order successfully created', 'status': 200, 'data': {'order_id': str(order_id)}}}
 
 class SendOrderCreationMail(Resource):
 
