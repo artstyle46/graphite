@@ -78,3 +78,13 @@ class getCouponDiscount(Resource):
         coupon_detail = coupon_detail[0]
         return {'message': {'msg': 'coupon applied successfully', 'status': 200,
                             'data': {'discount': coupon_detail.get('coupon_discount', 0)}}}
+
+
+class showAllCoupons(Resource):
+
+    def get(self):
+        coupon_db = g.dbclient['coupons']
+        coupons = coupon_db.find({})
+        if coupons.count():
+            return {'message': "All the existing coupons", "data": {'coupons': dumps(coupons), 'status': 200}}
+        abort(400, 'sorry no coupon exists as of now')

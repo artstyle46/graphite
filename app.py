@@ -72,3 +72,4 @@ def setup_app():
     api.add_resource(createCoupon, '/api/coupon/create', strict_slashes=False)
     api.add_resource(editCoupon, '/api/coupon/edit', strict_slashes=False)
     api.add_resource(getCouponDiscount, '/api/coupon/get', strict_slashes=False)
+    api.add_resource(showAllCoupons, '/api/coupon/show', strict_slashes=False)
