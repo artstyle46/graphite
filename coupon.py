@@ -10,8 +10,14 @@ class createCoupon(Resource):
 
     def post(self):
         coupon_db = g.dbclient['coupons']
-        coupon_id = request.json['coupon_id']
-        coupon_discount = request.json['coupon_discount']
+        try:
+            coupon_id = request.json['coupon_id']
+        except KeyError:
+            abort(400, 'coupon_id not provided to create coupon')
+        try:
+            coupon_discount = request.json['coupon_discount']
+        except KeyError:
+            abort(400, 'coupon_discount key not provided to create coupon')
         enabled = True
         created_at = datetime.datetime.now()
         coupon_json = {

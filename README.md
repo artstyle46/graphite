@@ -1,1 +1,1 @@
-Run: python run.py
+Run: sudo systemctl restart graphite-service.service
