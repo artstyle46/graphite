@@ -37,6 +37,7 @@ class Register(Resource):
         user_db = g.dbclient['users']
         email = request.json['email'].strip().lower()
         password = request.json['password']
+        name = request.json.get('name', '')
         hash_password = sha256_crypt.encrypt(password)
         user_type = 'customer'
         try:
@@ -45,6 +46,7 @@ class Register(Resource):
             abort(400, 'invalid mobile number')
         user = {
             'email': email,
+            'name': name,
             'password': hash_password,
             'mobile_no': mobile_no,
             'user_type': user_type
@@ -62,6 +64,7 @@ class VendorRegister(Resource):
         user_db = g.dbclient['users']
         email = request.json['email'].strip().lower()
         password = request.json['password']
+        name = request.json.get('name', '')
         hash_password = sha256_crypt.encrypt(password)
         user_type = 'vendor'
         try:
@@ -71,6 +74,7 @@ class VendorRegister(Resource):
         user = {
             'email': email,
             'password': hash_password,
+            'name': name,
             'mobile_no': mobile_no,
             'user_type': user_type
         }
