@@ -122,11 +122,10 @@ class Payment(Resource):
 
         try:
             capture_request = client.payment.capture(payment_id, payment_amount)
-            capture_response = capture_request.json()
         except Exception as e:
             capture_response = {}
 
-        if not capture_response.__contains__('status'):
+        if not capture_request.__contains__('status'):
             payment_status = 'authorized'
         else:
             payment_status = 'complete'
