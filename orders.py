@@ -120,9 +120,12 @@ class Payment(Resource):
 
         payment_amount = request.json['payment_amount'] * 100
 
-        capture_request = client.payment.capture(payment_id, payment_amount)
+        try:
+            capture_request = client.payment.capture(payment_id, payment_amount)
+            capture_response = capture_request.json()
+        except Exception as e:
+            capture_response = {}
 
-        capture_response = capture_request.json()
         if not capture_response.__contains__('status'):
             payment_status = 'authorized'
         else:
@@ -184,7 +187,7 @@ class UpdateOrderStatus(Resource):
         user_id = ObjectId(request.args['user_id'])
         upd_order = order_db.update_one({'_id': order_id, 'user': user_id}, {'$set': {'order_status': order_status}})
 
-        if not order.modified_count:
+        if not upd_order.modified_count:
             abort(400, 'order not updated')
 
         return {'message': {'msg': 'order updated successfully', 'status': 200}}
