@@ -130,7 +130,7 @@ class Payment(Resource):
         except Exception as e:
             capture_request = {}
             failure_reason = e.__cause__
-            traceback = e.__traceback__
+            traceback = str(e.__traceback__)
             status = 400
             message = 'payment failed'
 
