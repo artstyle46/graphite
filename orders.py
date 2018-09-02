@@ -121,12 +121,18 @@ class Payment(Resource):
         payment_amount = request.json['payment_amount'] * 100
         failure_reason = ''
         traceback = ''
+        message = ''
+        status = 200
         try:
             capture_request = client.payment.capture(payment_id, payment_amount)
+            message = 'order payment completed'
+            status = 200
         except Exception as e:
             capture_request = {}
             failure_reason = e.__cause__
             traceback = e.__traceback__
+            status = 400
+            message = 'payment failed'
 
         if not capture_request.__contains__('status'):
             payment_status = 'authorized'
@@ -139,7 +145,7 @@ class Payment(Resource):
                                               'failure_reason': failure_reason, 'traceback': traceback}})
         if not order.modified_count:
             abort(400, 'order not updated')
-        return {'message': {'msg': 'order payment completed', 'status': 200}}
+        return {'message': {'msg': message, 'status': status}}
 
 
 class ShowOrders(Resource):
