@@ -119,11 +119,14 @@ class Payment(Resource):
         payment_id = request.json['payment_id']
 
         payment_amount = request.json['payment_amount'] * 100
-
+        failure_reason = ''
+        traceback = ''
         try:
             capture_request = client.payment.capture(payment_id, payment_amount)
         except Exception as e:
-            capture_response = {}
+            capture_request = {}
+            failure_reason = e.__cause__
+            traceback = e.__traceback__
 
         if not capture_request.__contains__('status'):
             payment_status = 'authorized'
@@ -132,7 +135,8 @@ class Payment(Resource):
         order_status = 'processing'
 
         order = order_db.update_one({'_id': order_id},
-                                    {'$set': {'payment_status': payment_status, 'order_status': order_status}})
+                                    {'$set': {'payment_status': payment_status, 'order_status': order_status,
+                                              'failure_reason': failure_reason, 'traceback': traceback}})
         if not order.modified_count:
             abort(400, 'order not updated')
         return {'message': {'msg': 'order payment completed', 'status': 200}}
