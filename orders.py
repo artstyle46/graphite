@@ -98,10 +98,11 @@ class CreateOrder(Resource):
 
 class SendOrderCreationMail(Resource):
 
-    def post(self, email, order_status='UNKOWN'):
+    def post(self, order_status='UNKOWN'):
+        email = request.json.get('email', "")
         msg = Message(g.string_constants['ORDER_CREATION_SUBJECT'], sender=g.graphite_config['email'], recipients=[email])
         msg.body = g.string_constants['ORDER_CREATION_BODY'] + order_status
-        mail.send(msg)
+        g.mail.send(msg)
         return "Sent"
 
 class Payment(Resource):
