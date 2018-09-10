@@ -110,7 +110,7 @@ class Payment(Resource):
     def post(self):
         global RZP_KEY, RZP_AUTH_KEY
         order_db = g.dbclient['orders']
-        order_id = ObjectId(request.json['order_id'])
+        order_id = ObjectId(str(request.json['order_id']))
 
         import razorpay
 
@@ -118,7 +118,7 @@ class Payment(Resource):
 
         payment_id = request.json['payment_id']
 
-        payment_amount = request.json['payment_amount'] * 100
+        payment_amount = float(request.json['payment_amount']) * 100
         failure_reason = ''
         traceback = ''
         message = ''
